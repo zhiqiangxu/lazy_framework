@@ -1,0 +1,35 @@
+<div>
+    <a href="list_syntax.php">Back</a>
+</div>
+<hr />
+<table style="width:100%">
+    {foreach from=$record key=key item=value}
+    {if !in_array($key, $pks)}
+    <tr><td>{$key}</td><td><div>{$value|escape:"html"}</div></td></tr>
+    {/if}
+    {/foreach}
+</table>
+<hr />
+<div>
+    <a href="add_example_sentence.php?sid={$record['id']}">Add an example</a>
+</div>
+<hr />
+{if $records}
+
+<p>
+examples:
+</p>
+
+<table style="width:100%">
+    {foreach from=$records key=i item=example}
+    <tr>
+        {foreach from=$example key=name item=value}
+            <td align="center">{$value}</td>
+        {/foreach}
+            <td><a href="edit_example_sentence.php?id={$example['id']}&sid={$record['id']}">Edit</a>|<a href="delete_example_sentence.php?id={$example['id']}&sid={$record['id']}">Delete</a></td>
+    </tr>
+    {/foreach}
+
+</table>
+
+{/if}

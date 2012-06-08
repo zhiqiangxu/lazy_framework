@@ -1,0 +1,8 @@
+<form method="POST">
+    <table style="width:100%">
+        {foreach from=$record key=key item=value}
+        <tr><td>{$key}</td><td><textarea name="{$key|escape:"html"}" rows="8" cols="40">{$value|escape:"html"}</textarea></td></tr>
+        {/foreach}
+        <tr><td>&nbsp;</td><td><input type="submit" value="Submit" /></td></tr>
+    </table>
+</form>
