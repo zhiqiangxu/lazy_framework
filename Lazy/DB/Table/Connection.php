@@ -13,9 +13,9 @@ class Connection {
     public function join() {
         if (!$this->pdo) {
             $db_url = "mysql:host={$this->db_info['host']};dbname={$this->db_info['name']};charset={$this->db_info['encode']}";
-            $this->pdo = new PDO($db_url, $this->db_info['user'], $this->db_info['pass']/*, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$db_info['encode']}")*/);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $this->pdo = new \PDO($db_url, $this->db_info['user'], $this->db_info['pass']/*, array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES {$db_info['encode']}")*/);
+            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->pdo->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
         }
     }
 

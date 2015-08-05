@@ -1,7 +1,8 @@
 <?php
-use Lazy\Controller;
+namespace Application\Controller;
+use Lazy\Controller\Scaffold;
 
-class Controller_Syntax_Add extends Scaffold
+class Syntax_Add extends Scaffold
 {
     function display()
     {

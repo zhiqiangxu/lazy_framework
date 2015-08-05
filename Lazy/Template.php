@@ -1,16 +1,15 @@
 <?php
 namespace Lazy;
-require "ThirdParty/Smarty/SmartyBC.class.php";
+require "Library/Smarty/SmartyBC.class.php";
 
 class Template
 {
     var $smarty = NULL;
     function __construct()
     {
-        global $DOCUMENT_ROOT;
-        $this->smarty = new SmartyBC();
-        $this->smarty->template_dir = $DOCUMENT_ROOT . '/templates/';
-        $this->smarty->compile_dir  = $DOCUMENT_ROOT . '/templates_c/';
+        $this->smarty = new \SmartyBC();
+        $this->smarty->template_dir = APPLI_ROOT. '/Application/Views/';
+        $this->smarty->compile_dir  = APPLI_ROOT . '/Application/Views_c/';
         /*
         $this->smarty->config_dir   = './config/';
         $this->smarty->cache_dir    = './cache/';

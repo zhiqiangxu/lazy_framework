@@ -4,22 +4,31 @@ use Lazy\Utils\String;
 
 class Struct
 {
-    public function exchangeArray($array)
+    public function __get($field)
     {
+        assert(in_array($field, static::$fields), "No such field:$field");
+        return isset($this->$field) ? $this->$field : '';
+    }
+
+    public function __set($field, $value)
+    {
+        assert(in_array($field, static::$fields), "No such field:$field");
+        $this->$field = $value;
+    }
+
+    public static function exchangeArray($array)
+    {
+        $struct = new static;
         foreach ($array as $field => $value)
         {
-            $this[$field] = $value;
+            $struct->$field = $value;
         }
+        return $struct;
     }
 }
 
 class Table
 {
-    protected static $SCHEMA = NULL;
-    protected static $STRUCT = NULL;
-    protected static $PK = NULL;
-    protected static $TABLENAME = NULL;
-
     public static function fetchRow($suffix, $db_type, $sql, $bindings, $array = false) {
         $result = $this->query($suffix, $db_type, $sql, $bindings);
         if ($result) {
@@ -27,8 +36,8 @@ class Table
             if ($array)
                 return $row;
 
-            $struct = clone self::$STRUCT;
-            $struct->exchangeArray($row);
+            $fq_class_name = 'Application\Model\\' . static::$STRUCT;
+            $struct = $fq_class_name::exchangeArray($row);
             return $struct;
         }
 
@@ -41,9 +50,9 @@ class Table
             return $result;
 
         $list = array();
+        $fq_class_name = 'Application\Model\\' . static::$STRUCT;
         foreach ($result as $row) {
-            $struct = clone self::$STRUCT;
-            $struct->exchangeArray($row);
+            $struct = $fq_class_name::exchangeArray($row);
 
             $list[] = $struct;
         }
@@ -74,7 +83,7 @@ class Table
         list ($values, $bindings) = self::toInsertCSV($struct, $nobinding);
         $insert_sql = "INSERT INTO $table_name VALUES ($values)";
         global $db_connection_manager;
-        $db_con = $db_connection_manager->getCon(self::$SCHEMA, DB_TYPE_MST, $suffix);
+        $db_con = $db_connection_manager->getCon(static::$SCHEMA, DB_TYPE_MST, $suffix);
         $stmt = $db_con->prepare($insert_sql);
         $stmt->execute($bindings);
         return $db_con->lastInsertId();
@@ -86,7 +95,7 @@ class Table
         $bindings = array();
         foreach ($struct as $field => $value)
         {
-            if (in_array($field, self::$PK))
+            if (in_array($field, static::$PK))
                 continue;
             if (isset($old[$field]) && $old[$field] == $value)
                 continue;
@@ -107,7 +116,7 @@ class Table
     {
         $where = array();
         $bindings = array();
-        foreach (self::$PK as $field)
+        foreach (static::$PK as $field)
         {
             $key = ":$field";
             $where[] = "$field=$key";
@@ -135,13 +144,13 @@ class Table
 
     public static function makeTabeNameUserid($user_id)
     {
-        return self::$TABLENAME . '_' . String::getDbTableSuffixUserid($user_id);
+        return static::$TABLENAME . '_' . String::getDbTableSuffixUserid($user_id);
     }
 
     public static function execute($suffix, $db_type, $sql, $bindings)
     {
         global $db_connection_manager;
-        $db_con = $db_connection_manager->getCon(self::$SCHEMA, $db_type, $suffix);
+        $db_con = $db_connection_manager->getCon(static::$SCHEMA, $db_type, $suffix);
         $stmt = $db_con->prepare($sql);
         return $stmt->execute($bindings);
     }
@@ -149,7 +158,7 @@ class Table
     public static function query($suffix, $db_type, $sql, $bindings = NULL)
     {
         global $db_connection_manager;
-        $db_con = $db_connection_manager->getCon(self::$SCHEMA, $db_type, $suffix);
+        $db_con = $db_connection_manager->getCon(static::$SCHEMA, $db_type, $suffix);
 
         $stmt = $db_con->prepare($sql);
         $stmt->execute($bindings);

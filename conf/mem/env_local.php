@@ -7,4 +7,4 @@ $REDIS_CONF = array(
         array('host' => '', 'port' => ''),
         array('host' => '', 'port' => ''),
     ),
-)
+);

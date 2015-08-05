@@ -1,5 +1,7 @@
 <?php
 namespace Lazy\Controller;
+use Lazy\DB\Table\ConnectionManager;
+use Lazy\Template;
 
 if(!function_exists('get_called_class'))
 {
@@ -25,6 +27,9 @@ class Base
 
     function __construct()
     {
+        global $db_connection_manager;
+        global $DB_CONF;
+        $db_connection_manager = new ConnectionManager($DB_CONF);
     }
 
     /* just for chaining */
@@ -196,7 +201,7 @@ class Base
     function output($params = null)
     {
         header('Content-type: text/html; charset=utf-8');
-        $template = new Lazy\Template();
+        $template = new Template();
         if($params)
             $template->params($params);
         $template->params(
