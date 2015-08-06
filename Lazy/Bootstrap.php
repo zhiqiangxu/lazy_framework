@@ -33,4 +33,7 @@ $class = implode('_', $ucfirst_segments);
 
 
 $fq_class = 'Application\Controller\\' . $class . '_' . $method;
-$fq_class::get_instance()->display();
+if (defined('AJAX') && AJAX)
+    $fq_class::get_instance()->ajax();
+else
+    $fq_class::get_instance()->display();
