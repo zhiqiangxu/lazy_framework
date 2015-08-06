@@ -1,26 +1,19 @@
 <?php
-use Lazy\Controller;
+namespace Application\Controller;
+use Lazy\Controller\Base;
+use Application\Model\ExampleSentence;
+use Application\Model\ExampleSentence_DAO;
 
-class Controller_ExampleSentence_Delete extends Scaffold
+class ExampleSentence_Delete extends Base
 {
     function display()
     {
         $this->set_title("Delete example sentence");
-        $db = get_default_db();
-        if(empty($_POST))
-        {
-            $this->_do_table_before_delete($db, 'example_sentence', $_GET);
-        }
-        else
-        {
-            if(empty($_SESSION['accountId']) || $_SESSION['accountId'] != 1)
-            {
-                echo "VIP only!";
-                exit;
-            }
-
-            $_SERVER['HTTP_REFERER'] = 'view_syntax.php?id=' . $_GET['sid'];
-            $this->do_table_delete_row($db, 'example_sentence', $_POST, null, FALSE);
-        }
+        $id = $_GET['id'];
+        $struct = ExampleSentence_DAO::getRecord($id);
+        if ($struct)
+            ExampleSentence_DAO::delete($struct);
+        $this->set_main('ExampleSentence/Delete.tmpl');
+        $this->output($_GET);
     }
 }

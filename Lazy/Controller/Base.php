@@ -2,6 +2,7 @@
 namespace Lazy\Controller;
 use Lazy\DB\Table\ConnectionManager;
 use Lazy\Template;
+require APPLI_ROOT . '/Lazy/Library/FormValidator/FormValidator.php';
 
 if(!function_exists('get_called_class'))
 {
@@ -39,6 +40,13 @@ class Base
         session_start();
         return new $class();
     }
+
+	// load on demand
+	public function __get($key)
+	{
+		if($key == 'form_validator')
+			return $this->form_validator = new FormValidator;
+	}
 
     function generate_uri($params, $path = NULL)
     {
@@ -141,37 +149,14 @@ class Base
     {
         file_put_contents('php://stderr', $msg);
     }
-
-    /* db related stuff */
-    function prepare_insert_binding_string($columns, $hash, &$bindings)
+    
+    function show_404($params = null)
     {
-        $columns_string = $binding_string = '';
-        foreach ($columns as $column)
-        {
-            $columns_string .= ",$column";
-            $binding_string .= ',?';
-            $bindings[] = $hash[$column];
-        }
-        $result_string = '(' . substr($columns_string, 1) . ') VALUE(' . substr($binding_string, 1) . ')';
-        return $result_string;
+        $this->set_main('error/404.tmpl');
+        $this->output($params);
+        exit;
     }
-
-    function prepare_update_binding_string($columns, $hash, &$bindings)
-    {
-        $string = '';
-        foreach ($columns as $column)
-        {
-            $string .= ",$column=?";
-            $bindings[] = $hash[$column];
-        }
-        return substr($string, 1);
-    }
-
-    function prepare_select_binding_string($columns, $hash, &$bindings)
-    {
-        return $this->prepare_update_binding_string($columns, $hash, $bindings);
-    }
-
+    
     /* template related stuff */
     function set_layout($layout)
     {

@@ -1,10 +1,10 @@
 <?php
 namespace Application\Controller;
-use Lazy\Controller\Scaffold;
+use Lazy\Controller\Base;
 use Application\Model\ExampleSentence;
 use Application\Model\ExampleSentence_DAO;
 
-class ExampleSentence_Add extends Scaffold
+class ExampleSentence_Add extends Base
 {
     function display()
     {

@@ -30,7 +30,7 @@ class Struct
 class Table
 {
     public static function fetchRow($suffix, $db_type, $sql, $bindings, $array = false) {
-        $result = $this->query($suffix, $db_type, $sql, $bindings);
+        $result = self::query($suffix, $db_type, $sql, $bindings);
         if ($result) {
             $row = $result[0];
             if ($array)
@@ -44,8 +44,8 @@ class Table
         return null;
     }
 
-    public static function fetchAll($suffix, $db_type, $sql, $bindings, $array = false) {
-        $result = $this->query($suffix, $db_type, $sql, $bindings);
+    public static function fetchAll($suffix, $db_type, $sql, $bindings = array(), $array = false) {
+        $result = self::query($suffix, $db_type, $sql, $bindings);
         if ($array)
             return $result;
 
@@ -64,21 +64,22 @@ class Table
     {
         $fields = array();
         $bindings = array();
-        foreach ($struct as $field => $value)
+        $class_name = get_class($struct);
+        foreach ($class_name::$fields as $field)
         {
             if (isset($nobinding[$field]))
                 $fields[] = $nobinding[$field];
             else {
                 $key = ":$field";
                 $fields[] = $key;
-                $bindings[$key] = $struct[$field];
+                $bindings[$key] = $struct->$field;
             }
         }
 
         return array(join(',', $fields), $bindings);
     }
 
-    public static function insert($suffix, $table_name, $struct, $nobinding = array())
+    public static function do_insert($suffix, $table_name, $struct, $nobinding = array())
     {
         list ($values, $bindings) = self::toInsertCSV($struct, $nobinding);
         $insert_sql = "INSERT INTO $table_name VALUES ($values)";
@@ -95,7 +96,7 @@ class Table
         $bindings = array();
         foreach ($struct as $field => $value)
         {
-            if (in_array($field, static::$PK))
+            if (in_array($field, explode(',', static::$PK)))
                 continue;
             if (isset($old[$field]) && $old[$field] == $value)
                 continue;
@@ -105,28 +106,28 @@ class Table
             else {
                 $key = ":$field";
                 $sets[] = "$field=$key";
-                $bindings[$key] = $struct[$field];
+                $bindings[$key] = $struct->$field;
             }
         }
 
         return array(join(',', $sets), $bindings);
     }
 
-    public function toUpdateWhere($struct)
+    public static function toUpdateWhere($struct)
     {
         $where = array();
         $bindings = array();
-        foreach (static::$PK as $field)
+        foreach (explode(',', static::$PK) as $field)
         {
             $key = ":$field";
             $where[] = "$field=$key";
-            $bindings[$key] = $struct[$field];
+            $bindings[$key] = $struct->$field;
         }
 
         return array(join(' AND ', $where), $bindings);
     }
 
-    public static function update($suffix, $table_name, $struct, $nobinding = array())
+    public static function do_update($suffix, $table_name, $struct, $nobinding = array())
     {
         list ($set, $set_bindings) = self::toUpdateSet($struct, $nobinding);
         list ($where, $where_bindings) = self::toUpdateWhere($struct);
@@ -135,7 +136,7 @@ class Table
         return self::execute($suffix, DB_TYPE_MST, $update_sql, $bindings);
     }
 
-    public static function delete($suffix, $table_name, $struct)
+    public static function do_delete($suffix, $table_name, $struct)
     {
         list ($where, $where_bindings) = self::toUpdateWhere($struct);
         $delete_sql = "DELETE FROM $table_name WHERE $where";
@@ -162,7 +163,7 @@ class Table
 
         $stmt = $db_con->prepare($sql);
         $stmt->execute($bindings);
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $stmt->setFetchMode(\PDO::FETCH_ASSOC);
 
         return $stmt->fetchAll();
     }

@@ -17,4 +17,3 @@ require APPLI_ROOT . "/Lazy/DB/Table/Connection.php";
 require APPLI_ROOT . "/Lazy/Template.php";
 // C
 require APPLI_ROOT . "/Lazy/Controller/Base.php";
-require APPLI_ROOT . "/Lazy/Controller/Scaffold.php";

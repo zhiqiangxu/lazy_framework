@@ -10,7 +10,6 @@ class ConnectionSchema {
 
     public function __construct($array) {
         $this->define_list = $array;
-
         foreach ($array as $info) {
             $this->mst_conn_list[] = null;
             $this->mst_tran_list[] = null;

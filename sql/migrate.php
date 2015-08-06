@@ -1,39 +1,19 @@
 <?php
-$require_file = array(
-	"dev" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_aws.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_aws.php'),
-    "ucloud" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_test.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_test.php'),
-    "ucloud_staging" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_dev01.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_dev01.php'),
-    "uc_xand_staging" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_xand_staging.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_xand_staging.php'),
-    "uc_review" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_review.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_review.php'),
-    "uc_test01" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_test01.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_test01.php'),
-    "uc_test02" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_test02.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_test02.php'),
-    "uc_test03" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_test03.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_test03.php'),
-    "uc_test04" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_test04.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_test04.php'),
-    "uc_test05" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_test05.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_test05.php'),
-    "uc_android_gz01" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_android_gz01.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_android_gz01.php'),
-    "uc_android_gz02" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_android_gz02.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_android_gz02.php'),
-    "uc_android_gz03" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_android_gz03.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_android_gz03.php'),
-    "uc_android_gz04" => array(__DIR__ . '/../html/php/cmn/conf/env/cmn_env_uc_android_gz04.php',__DIR__ . '/../html/php/cmn/conf/raid/cmn_raid_uc_android_gz04.php'),
+$DOMAIN_NAMES = array(
+	"lazy" => 'lazy'
 );
-if (count($argv) < 3 or !in_array($argv[1], array("migrate","check_db")) or !in_array($argv[2], array_keys($require_file))){
+
+if (count($argv) < 3 or !in_array($argv[1], array("migrate","check_db")) or !in_array($argv[2], array_keys($DOMAIN_NAMES))){
 	echo "error: migrate argv not in enum list!";
 	exit;
 }
 $mode = $argv[1];
 $server = $argv[2];
+$argv[1] = $DOMAIN_NAMES[$server];
 
-foreach ($require_file[$server] as $import_file){
-	require_once $import_file;
-}
 
-$total_db_conf = array();
-foreach ($raid_db_conf as $conf => $value){
-	$total_db_conf[$conf] =  $value;
-}
-foreach ($db_conf as $conf => $value){
-	$total_db_conf[$conf] =  $value;
-}
-    
+$total_db_conf = $db_conf;
+
 if ($mode == "migrate"){
     foreach ($total_db_conf as $conf => $value){
         echo"migrate $conf\n";
