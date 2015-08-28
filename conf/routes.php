@@ -1,2 +1,2 @@
 <?php 
-$route['default_controller'] = "welcome";
+$route['default_route'] = "welcome/index";

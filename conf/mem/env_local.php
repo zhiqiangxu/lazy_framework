@@ -1,8 +1,8 @@
 <?php
 
-global $REDIS_CONF;
+global $MEM_CONF;
 
-$REDIS_CONF = array(
+$MEM_CONF = array(
     'default' => array(
         array('host' => '', 'port' => ''),
         array('host' => '', 'port' => ''),
